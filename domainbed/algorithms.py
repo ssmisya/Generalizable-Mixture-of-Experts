@@ -1,22 +1,23 @@
 # Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved
 
+import copy
 import sys
+from copy import deepcopy
 from itertools import chain
 
 import timm
 import torch
+import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 import wandb
-import torch.autograd as autograd
+
 from domainbed.lib.misc import (
     random_pairs_of_minibatches, ParamDict, MovingAverage, l2_between_dicts
 )
-from copy import deepcopy
-import copy
 
-sys.path.append('/mnt/lustre/bli/projects/EIL/domainbed')
-import vision_transformer, vision_transformer_hybrid
+sys.path.append('/home/protago/smy/Generalizable-Mixture-of-Experts/domainbed')
+import vision_transformer#, vision_transformer_hybrid
 from collections import defaultdict, OrderedDict
 
 try:
@@ -26,7 +27,7 @@ except:
     backpack = None
 
 from domainbed import networks
-from domainbed import resnet_variants
+# from domainbed import resnet_variants
 import torchvision.models as models
 
 ALGORITHMS = [

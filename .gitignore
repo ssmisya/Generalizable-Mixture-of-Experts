@@ -1,0 +1,5 @@
+.pycharm_helpers
+*__pycache__
+results
+scripts
+train_output

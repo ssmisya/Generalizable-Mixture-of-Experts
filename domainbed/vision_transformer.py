@@ -236,7 +236,7 @@ class Attention(nn.Module):
 
 class Block(nn.Module):
 
-    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, drop=0., attn_drop=0., drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, cur_depth=0, moe_layers=None, num_experts=6, router='cosine_top'):
+    def __init__(self, dim, num_heads, mlp_ratio=4., qkv_bias=False, drop=0., attn_drop=0., drop_path=0., act_layer=nn.GELU, norm_layer=nn.LayerNorm, cur_depth=0, moe_layers=None, num_experts=6, router='cosine_top',is_tutel=False, index_hook=False):
         super().__init__()
         self.norm1 = norm_layer(dim)
         self.attn = Attention(dim, num_heads=num_heads, qkv_bias=qkv_bias, attn_drop=attn_drop, proj_drop=drop)
@@ -294,7 +294,7 @@ class VisionTransformer(nn.Module):
     def __init__(self, img_size=224, patch_size=16, in_chans=3, num_classes=1000, embed_dim=768, depth=12,
                  num_heads=12, mlp_ratio=4., qkv_bias=True, representation_size=None, distilled=False,
                  drop_rate=0., attn_drop_rate=0., drop_path_rate=0., embed_layer=PatchEmbed, norm_layer=None,
-                 act_layer=None, weight_init='', moe_layers=None, num_experts=6, index_hook=False, router='cosine_top'):
+                 act_layer=None, weight_init='', moe_layers=None, num_experts=6, index_hook=False, router='cosine_top',is_tutel=False):
         """
         Args:
             img_size (int, tuple): input image size
@@ -314,6 +314,7 @@ class VisionTransformer(nn.Module):
             embed_layer (nn.Module): patch embedding layer
             norm_layer: (nn.Module): normalization layer
             weight_init: (str): weight init scheme
+            is_tutel : added by smy 
         """
         super().__init__()
         self.num_classes = num_classes
@@ -335,7 +336,7 @@ class VisionTransformer(nn.Module):
             Block(
                 dim=embed_dim, num_heads=num_heads, mlp_ratio=mlp_ratio, qkv_bias=qkv_bias, drop=drop_rate,
                 attn_drop=attn_drop_rate, drop_path=dpr[i], norm_layer=norm_layer, act_layer=act_layer,
-                cur_depth=i, moe_layers=moe_layers, num_experts=num_experts, index_hook=index_hook, router=router)
+                cur_depth=i, moe_layers=moe_layers, num_experts=num_experts, index_hook=index_hook, router=router,is_tutel=is_tutel)
             for i in range(depth)])
         self.norm = norm_layer(embed_dim)
 
@@ -912,16 +913,16 @@ def vit_large_patch16_224_in21k(pretrained=False, **kwargs):
     return model
 
 
-@register_model
-def vit_huge_patch14_224_in21k(pretrained=False, **kwargs):
-    """ ViT-Huge model (ViT-H/14) from original paper (https://arxiv.org/abs/2010.11929).
-    ImageNet-21k weights @ 224x224, source https://github.com/google-research/vision_transformer.
-    NOTE: this model has a representation layer but the 21k classifier head is zero'd out in original weights
-    """
-    model_kwargs = dict(
-        patch_size=14, embed_dim=1280, depth=32, num_heads=16, representation_size=1280, **kwargs)
-    model = _create_vision_transformer('vit_huge_patch14_224_in21k', pretrained=pretrained, **model_kwargs)
-    return model
+# @register_model
+# def vit_huge_patch14_224_in21k(pretrained=False, **kwargs):
+#     """ ViT-Huge model (ViT-H/14) from original paper (https://arxiv.org/abs/2010.11929).
+#     ImageNet-21k weights @ 224x224, source https://github.com/google-research/vision_transformer.
+#     NOTE: this model has a representation layer but the 21k classifier head is zero'd out in original weights
+#     """
+#     model_kwargs = dict(
+#         patch_size=14, embed_dim=1280, depth=32, num_heads=16, representation_size=1280, **kwargs)
+#     model = _create_vision_transformer('vit_huge_patch14_224_in21k', pretrained=pretrained, **model_kwargs)
+#     return model
 
 
 @register_model

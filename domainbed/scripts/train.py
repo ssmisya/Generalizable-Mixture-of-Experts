@@ -8,8 +8,8 @@ import random
 import sys
 import time
 
-sys.path.append("/mnt/lustre/bli/projects/EIL/domainbed")
-os.environ['WANDB_API_KEY'] = 'abc1859572354a66fc85b2ad1d1009add929cbfa'
+sys.path.append("/home/protago/smy/Generalizable-Mixture-of-Experts/domainbed")
+os.environ['WANDB_API_KEY'] = 'd3a8bf6410ba80a8ad7925bcba4c39429517a77b'
 
 import wandb
 import PIL
@@ -65,26 +65,28 @@ if __name__ == "__main__":
     os.makedirs(args.output_dir, exist_ok=True)
     sys.stdout = misc.Tee(os.path.join(args.output_dir, 'out.txt'))
     sys.stderr = misc.Tee(os.path.join(args.output_dir, 'err.txt'))
-    # if "Debug" not in args.dataset:
-    #     wandb.init(project="sparse-moe",
-    #                entity='drluodian',
-    #                config={'dataset': args.dataset,
-    #                        'algorithm': args.algorithm,
-    #                        'test_envs': args.test_envs},
-    #                settings=wandb.Settings(start_method="fork"))
-    # wandb.init(settings=wandb.Settings(start_method='thread'))
-    # print("Environment:")
-    # print("\tPython: {}".format(sys.version.split(" ")[0]))
-    # print("\tPyTorch: {}".format(torch.__version__))
-    # print("\tTorchvision: {}".format(torchvision.__version__))
-    # print("\tCUDA: {}".format(torch.version.cuda))
-    # print("\tCUDNN: {}".format(torch.backends.cudnn.version()))
-    # print("\tNumPy: {}".format(np.__version__))
-    # print("\tPIL: {}".format(PIL.__version__))
-    #
-    # print('Args:')
-    # for k, v in sorted(vars(args).items()):
-    #     print('\t{}: {}'.format(k, v))
+    ## wandb settings
+    if "Debug" not in args.dataset:
+        wandb.init(project="vit-ood-moe",
+                   entity='mysong',
+                   config={'dataset': args.dataset,
+                           'algorithm': args.algorithm,
+                           'test_envs': args.test_envs},
+                   settings=wandb.Settings(start_method="fork"))
+    wandb.init(settings=wandb.Settings(start_method='thread'))
+    print("Environment:")
+    print("\tPython: {}".format(sys.version.split(" ")[0]))
+    print("\tPyTorch: {}".format(torch.__version__))
+    print("\tTorchvision: {}".format(torchvision.__version__))
+    print("\tCUDA: {}".format(torch.version.cuda))
+    print("\tCUDNN: {}".format(torch.backends.cudnn.version()))
+    print("\tNumPy: {}".format(np.__version__))
+    print("\tPIL: {}".format(PIL.__version__))
+    
+    
+    print('Args:')
+    for k, v in sorted(vars(args).items()):
+        print('\t{}: {}'.format(k, v))
 
     if args.hparams_seed == 0:
         hparams = hparams_registry.default_hparams(args.algorithm, args.dataset)
@@ -103,9 +105,9 @@ if __name__ == "__main__":
     if args.weight_decay is not None:
         hparams['weight_decay'] = args.weight_decay
 
-    # print('HParams:')
-    # for k, v in sorted(hparams.items()):
-    #     print('\t{}: {}'.format(k, v))
+    print('HParams:')
+    for k, v in sorted(hparams.items()):
+        print('\t{}: {}'.format(k, v))
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -263,8 +265,8 @@ if __name__ == "__main__":
             misc.print_row([results[key] for key in results_keys],
                            colwidth=12)
 
-            # if wandb.run:
-            #     wandb.log(results)
+            if wandb.run:
+                wandb.log(results)
             results.update({
                 'hparams': hparams,
                 'args': vars(args)
